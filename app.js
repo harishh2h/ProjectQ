@@ -29,7 +29,7 @@ app.post("/pdfanalyse", upload.single("pdf"), async (req, res) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
   async function sleep() {
-    await timeout(3000);
+    await timeout(4000);
     return "time compelted";
   }
   let waitTime = await sleep();
