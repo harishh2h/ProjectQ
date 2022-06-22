@@ -17,8 +17,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "npx run Index.js",
-    "deploy": "npm run build && gh-pages -d dist",
+    "start": "node run Index.js",
     "dev": "nodemon run Index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
