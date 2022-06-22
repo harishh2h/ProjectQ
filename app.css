@@ -1,0 +1,15 @@
+body{
+    display:flex; 
+    background-color: blue;
+    flex-direction: row ;  
+    align-items: center; 
+    justify-content:center
+}
+.form{
+    background-color: aquamarine;
+    display:flex; 
+    flex-direction: row ;  
+    align-items: center; 
+    justify-content:center
+    
+}
