@@ -23,20 +23,10 @@ app.get("/", (req, res) => {
 });
 
 app.post("/pdfanalyse", upload.single("pdf"), async (req, res) => {
-  //   const data = await pdfParse(req.file.buffer);
-  let data = await readPdf(req.file.buffer, req.file.originalname);
-  // console.log("analyse completed", data);
-  function timeout(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-  async function sleep() {
-    await timeout(4000);
-    return "time compelted";
-  }
-  let waitTime = await sleep();
+  await readPdf(req.file.buffer, req.file.originalname);
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   res.sendFile("./Analyzed.pdf", { root: __dirname });
-  // fs.unlinkSync("./Analyzed.pdf");
 });
 
 app.listen(port, () => {

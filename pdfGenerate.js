@@ -168,7 +168,7 @@ const readPdf = async (buffer, pdfname) => {
     chart.setWidth(500).setHeight(300).setBackgroundColor("White");
 
     // console.log(chart.getUrl());
-    chart.toFile("./uploads/all.png");
+    await chart.toFile("./uploads/all.png");
 
     chart.setConfig({
       type: "pie",
@@ -180,7 +180,7 @@ const readPdf = async (buffer, pdfname) => {
     chart.setWidth(500).setHeight(300).setBackgroundColor("White");
 
     // console.log(chart.getUrl());
-    chart.toFile("./uploads/A.png");
+    await chart.toFile("./uploads/A.png");
 
     chart.setConfig({
       type: "pie",
@@ -192,7 +192,7 @@ const readPdf = async (buffer, pdfname) => {
     chart.setWidth(500).setHeight(300).setBackgroundColor("White");
 
     // console.log(chart.getUrl());
-    chart.toFile("./uploads/B.png");
+    await chart.toFile("./uploads/B.png");
 
     chart.setConfig({
       type: "pie",
@@ -204,7 +204,7 @@ const readPdf = async (buffer, pdfname) => {
     chart.setWidth(500).setHeight(300).setBackgroundColor("White");
 
     // console.log(chart.getUrl());
-    chart.toFile("./uploads/C.png");
+    await chart.toFile("./uploads/C.png");
 
     const doc = new PDFDocument();
 
