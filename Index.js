@@ -32,5 +32,3 @@ app.post("/pdfanalyse", upload.single("pdf"), async (req, res) => {
 app.listen(port, () => {
   console.log("Server started on", port);
 });
-
-module.exports = app;
