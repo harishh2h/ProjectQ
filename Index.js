@@ -1,309 +1,46 @@
-const fs = require("fs");
+const express = require("express");
+const app = express();
+const multer = require("multer");
+const path = require("path");
 const pdfParse = require("pdf-parse");
-const md5 = require("md5");
-const PDFDocument = require("pdfkit");
+const readPdf = require("./pdfGenerate.js");
+var bodyParser = require("body-parser");
+const { time } = require("console");
+const fs = require("fs");
 
-const readPdf = async (buffer, pdfname) => {
-  // const buffer = fs.readFileSync(url);
-  try {
-    const data = await pdfParse(buffer);
-    let dataArr = [...data.text.split("SECTION")];
-    let SectionA = [...dataArr[1].split("\n")];
-    SectionA.shift();
-    SectionA.shift();
-    SectionA.pop();
-    SectionA.pop();
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
-    let SectionB = [...dataArr[2].split("\n")];
-    SectionB.shift();
-    SectionB.shift();
-    SectionB.shift();
-    SectionB.pop();
-    SectionB.pop();
+const port = process.env.PORT || 3000;
 
-    // console.log(SectionB);
+app.set("view engine", "hbs");
+app.set("views", path.join(__dirname));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-    let SectionC = [...dataArr[3].split("\n")];
-    SectionC.shift();
-    SectionC.shift();
-    SectionC.shift();
-    SectionC.pop();
+app.get("/", (req, res) => {
+  res.render("index");
+});
 
-    let patternA = [
-      "choose",
-      "define",
-      "find",
-      "identify",
-      "indicate",
-      "list",
-      "label",
-      "match",
-      "name",
-      "state",
-      "what",
-      "when",
-      "where",
-      "who",
-      "which",
-      "tell",
-      "recite",
-      "outline",
-      "select",
-      "comprehend",
-      "demonstrate",
-    ];
-
-    let patternB = [
-      "analyze",
-      "classify",
-      "determine",
-      "discuss",
-      "evaluate",
-      "explain",
-      "illustrate",
-      "justify",
-      "prepare",
-      "show",
-      "sketch",
-      "solve",
-      "state",
-      "calculate",
-      "modify",
-      "compute",
-      "compile",
-      "execute",
-      "compliment",
-      "map",
-      "plot",
-      "implement",
-    ];
-
-    let patternC = [
-      "analyze",
-      "classify",
-      "determine",
-      "discuss",
-      "evaluate",
-      "explain",
-      "illustrate",
-      "justify",
-      "solve",
-      "formulate",
-      "construct",
-      "interpret",
-      "deduce",
-      "calculate",
-      "develop",
-      "assess",
-      "differentiate",
-      "elucidate",
-      "elaborate",
-      "enumare",
-      "compare",
-      "implement",
-      "apprise",
-      "outline",
-      "predict",
-      "generate",
-      "create",
-      "conclude",
-      "estimate",
-      "simplify",
-      "design",
-      "rewrite",
-    ];
-
-    let regexA = new RegExp("/" + patternA.join(" | ") + "/", "i");
-    let regexB = new RegExp("/" + patternB.join(" | ") + "/", "i");
-    let regexC = new RegExp("/" + patternC.join(" | ") + "/", "i");
-    let satA = 0;
-    let unSatA = 0;
-
-    let satB = 0;
-    let unSatB = 0;
-
-    let satC = 0;
-    let unSatC = 0;
-
-    SectionA.forEach((question) => {
-      if (regexA.test(question)) {
-        satA = satA + 1;
-      } else {
-        unSatA = unSatA + 1;
-      }
-    });
-
-    SectionB.forEach((question) => {
-      if (regexB.test(question)) {
-        satB = satB + 1;
-      } else {
-        unSatB = unSatB + 1;
-      }
-    });
-
-    SectionC.forEach((question) => {
-      if (regexC.test(question)) {
-        satC = satC + 1;
-      } else {
-        unSatC = unSatC + 1;
-      }
-    });
-
-    let totSat = satA + satB + satC;
-    let totUnsat = unSatA + unSatB + unSatC;
-
-    // SectionC.forEach((question) => {
-    //   console.log(question.toLowerCase(), regexC.test(question.toLowerCase()));
-    // });
-    const ChartJsImage = require("chartjs-to-image");
-    const chart = new ChartJsImage();
-
-    chart.setConfig({
-      type: "pie",
-      data: {
-        labels: ["Satisfied Questions ", "Unsatisfied Questions"],
-        datasets: [{ label: "Foo", data: [totSat, totUnsat] }],
-      },
-    });
-    chart.setWidth(500).setHeight(300).setBackgroundColor("White");
-
-    // console.log(chart.getUrl());
-    chart.toFile("./uploads/all.png");
-
-    chart.setConfig({
-      type: "pie",
-      data: {
-        labels: ["Satisfied Questions ", "Unsatisfied Questions"],
-        datasets: [{ label: "Section A", data: [satA, unSatA] }],
-      },
-    });
-    chart.setWidth(500).setHeight(300).setBackgroundColor("White");
-
-    // console.log(chart.getUrl());
-    chart.toFile("./uploads/A.png");
-
-    chart.setConfig({
-      type: "pie",
-      data: {
-        labels: ["Satisfied Questions ", "Unsatisfied Questions"],
-        datasets: [{ label: "Section B", data: [satB, unSatB] }],
-      },
-    });
-    chart.setWidth(500).setHeight(300).setBackgroundColor("White");
-
-    // console.log(chart.getUrl());
-    chart.toFile("./uploads/B.png");
-
-    chart.setConfig({
-      type: "pie",
-      data: {
-        labels: ["Satisfied Questions ", "Unsatisfied Questions"],
-        datasets: [{ label: "Section C", data: [satC, unSatC] }],
-      },
-    });
-    chart.setWidth(500).setHeight(300).setBackgroundColor("White");
-
-    // console.log(chart.getUrl());
-    chart.toFile("./uploads/C.png");
-
-    const doc = new PDFDocument();
-
-    const generatePDF = async () => {
-      doc.pipe(fs.createWriteStream("Analyzed.pdf"));
-      doc
-        .fontSize(12)
-        .text(pdfname.slice(0, -4) + " Pattern Analysis", 100, 100, {
-          align: "center",
-        })
-        .fontSize(8)
-        .text("  ")
-        .text("  ")
-        .text(`HASH VALUE : ${md5(buffer)}`, {
-          align: "center",
-        })
-        .fontSize(12)
-        .text("  ")
-        .text(" ******  ", {
-          align: "center",
-        })
-        .text("   ")
-        .text("ALL Question Paper Pattern Analysis Result", {
-          align: "center",
-        })
-
-        .text(" ")
-        .text(" ")
-        .text(` Pattern Satisfied Questions : ${totSat} `, { align: "center" })
-        .text(` Pattern Unsatisfied Questions : ${totUnsat} `, {
-          align: "center",
-        })
-
-        .image("./uploads/all.png", {
-          fit: [350, 350],
-          align: "center",
-          valign: "center",
-        })
-        .addPage()
-        .text("Section A - Pattern Analysis Result", 100, 100, {
-          align: "center",
-        })
-
-        .text(" ")
-        .text(" ")
-        .text(`Section A - Pattern Satisfied Questions : ${satA} `, {
-          align: "center",
-        })
-        .text(`Section A - Pattern Unsatisfied Questions : ${unSatA} `, {
-          align: "center",
-        })
-
-        .image("./uploads/A.png", {
-          fit: [350, 350],
-          align: "center",
-          valign: "center",
-        })
-        .addPage()
-        .text("Section B - Pattern Analysis Result", 100, 100, {
-          align: "center",
-        })
-
-        .text(`Section B - Pattern Satisfied Questions : ${satB} `, {
-          align: "center",
-        })
-        .text(`Section B - Pattern Unsatisfied Questions : ${unSatB} `, {
-          align: "center",
-        })
-        .image("./uploads/B.png", {
-          fit: [350, 350],
-          align: "center",
-          valign: "center",
-        })
-        .addPage()
-        .text("Section C   - Pattern Analysis Result", 100, 100, {
-          align: "center",
-        })
-
-        .text(`Section C - Pattern Satisfied Questions : ${satC} `, {
-          align: "center",
-        })
-        .text(`Section C - Pattern Unsatisfied Questions : ${unSatC} `, {
-          align: "center",
-        })
-        .image("./uploads/C.png", {
-          fit: [350, 350],
-          align: "center",
-          valign: "center",
-        });
-      doc.end();
-    };
-    await generatePDF();
-
-    // console.log("Completed");
-  } catch (error) {
-    console.log(error);
+app.post("/pdfanalyse", upload.single("pdf"), async (req, res) => {
+  //   const data = await pdfParse(req.file.buffer);
+  let data = await readPdf(req.file.buffer, req.file.originalname);
+  // console.log("analyse completed", data);
+  function timeout(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
-};
+  async function sleep() {
+    await timeout(4000);
+    return "time compelted";
+  }
+  let waitTime = await sleep();
 
-module.exports = readPdf;
+  res.sendFile("./Analyzed.pdf", { root: __dirname });
+  // fs.unlinkSync("./Analyzed.pdf");
+});
 
-// const dummy_pdf = "./Web Programming with PHP _ MYSQL - End Sem Exam QP.pdf";
+app.listen(port, () => {
+  console.log("Server started on", port);
+});
+
+module.exports = app;
